@@ -15,11 +15,6 @@ kotlin {
 }
 
 dependencies {
-    implementation(project(":domain"))
-
-    implementation(libs.retrofit)
-    implementation(libs.retrofit.gson)
-    implementation(libs.okhttp.logging.interceptor)
     implementation(libs.koin.core)
-    implementation(libs.kotlinx.coroutines.core)
+    implementation(project(":data"))
 }

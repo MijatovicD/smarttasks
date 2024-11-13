@@ -23,3 +23,4 @@ rootProject.name = "Smart tasks"
 include(":app")
 include(":data")
 include(":domain")
+include(":di")
