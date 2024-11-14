@@ -11,8 +11,14 @@ import com.example.smarttasks.task.model.TaskUiModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 class TaskViewModel(
     private val getTasksUseCase: GetTasksUseCase,
@@ -24,6 +30,9 @@ class TaskViewModel(
 
     val taskListUiStateFlow: StateFlow<TaskListUiState> =
         mutableStateTaskListUiState.asStateFlow()
+
+    private val mutableCurrentDateFlow = MutableStateFlow(LocalDate.now())
+    val currentDateFlow: StateFlow<LocalDate> = mutableCurrentDateFlow
 
     init {
         getTasks()
@@ -49,4 +58,17 @@ class TaskViewModel(
         }.onFailure {
             Log.d("00>", "Couldn't map to task ui model.")
         }.getOrThrow()
+
+    fun goToPreviousOrNextDay(isNextDay: Boolean) {
+        viewModelScope.launch {
+            mutableCurrentDateFlow.value = if (isNextDay) mutableCurrentDateFlow.value.plusDays(1)
+            else mutableCurrentDateFlow.value.minusDays(1)
+
+            val completeState =
+                mutableStateTaskListUiState.filterIsInstance<TaskListUiState.Complete>()
+            val taskList = completeState.mapNotNull { it.uiModel }
+                .map { task -> task.filter { dueDate -> dueDate.equals(mutableCurrentDateFlow.value) } }
+            mutableStateTaskListUiState.update { TaskListUiState.Complete(taskList.first()) }
+        }
+    }
 }
