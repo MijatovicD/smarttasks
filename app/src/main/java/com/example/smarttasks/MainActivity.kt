@@ -213,7 +213,7 @@ class MainActivity : ComponentActivity() {
                             color = Color.Gray
                         )
                         Text(
-                            text = task.dueDate,
+                            text = task.daysLeft,
                             fontSize = 15.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color(0xFFEF4B5E)

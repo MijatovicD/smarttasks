@@ -19,11 +19,14 @@ import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 class TaskViewModel(
     private val getTasksUseCase: GetTasksUseCase,
     private val taskToTaskUiModelMapper: TaskToTaskUiModelMapper,
 ) : ViewModel() {
+
+    private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
     private val mutableStateTaskListUiState: MutableStateFlow<TaskListUiState> =
         MutableStateFlow(TaskListUiState.Loading)
@@ -55,6 +58,10 @@ class TaskViewModel(
     private suspend fun List<Task>.toUiModel(): List<TaskUiModel> =
         taskToTaskUiModelMapper.runCatching {
             mapList(this@toUiModel)
+        }.onSuccess { taskList ->
+            taskList.sortedWith(
+                compareBy<TaskUiModel> { it.priority }.thenBy { LocalDate.parse(it.dueDate, dateFormatter) }
+            )
         }.onFailure {
             Log.d("00>", "Couldn't map to task ui model.")
         }.getOrThrow()
