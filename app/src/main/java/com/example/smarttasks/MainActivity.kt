@@ -17,7 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import com.example.smarttasks.task.TaskViewModel
-import com.example.smarttasks.task.model.TaskUIState
+import com.example.smarttasks.task.model.TaskListUiState
 import com.example.smarttasks.ui.theme.SmartTasksTheme
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import androidx.compose.foundation.layout.*
@@ -27,18 +27,13 @@ import androidx.compose.material3.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import com.example.domain.model.Task
 import com.example.smarttasks.task.TaskListPreviewParameterProvider
 import com.example.smarttasks.task.model.TaskUiModel
-import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoUnit
 
 class MainActivity : ComponentActivity() {
 
@@ -60,7 +55,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun TaskListScreen(uiState: TaskUIState) {
+fun TaskListScreen(uiState: TaskListUiState) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -77,10 +72,10 @@ fun TaskListScreen(uiState: TaskUIState) {
         )
 
         when (uiState) {
-            TaskUIState.Loading -> LoadingScreen()
-            is TaskUIState.Complete -> CompleteTaskListState(uiState.uiModel)
-            TaskUIState.Empty -> EmptyScreen()
-            TaskUIState.Error -> ErrorScreen()
+            TaskListUiState.Loading -> LoadingScreen()
+            is TaskListUiState.Complete -> CompleteTaskListState(uiState.uiModel)
+            TaskListUiState.Empty -> EmptyScreen()
+            TaskListUiState.Error -> ErrorScreen()
             else -> return
         }
     }
@@ -124,12 +119,7 @@ fun EmptyScreen(
             .fillMaxSize(),
         contentAlignment = Alignment.Center,
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.bg_empty_screen_background),
-            contentDescription = "No tasks background",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize()
-        )
+
     }
 }
 
@@ -205,9 +195,9 @@ fun TaskCard(task: TaskUiModel) {
 @Preview
 @Composable
 fun PreviewTaskListScreen(
-    @PreviewParameter(TaskListPreviewParameterProvider::class) taskListUiModel: TaskUIState.Complete,
+    @PreviewParameter(TaskListPreviewParameterProvider::class) taskListUiModel: TaskListUiState.Complete,
 ) {
-    MaterialTheme {
+    SmartTasksTheme {
         CompleteTaskListState(taskListUiModel.uiModel)
     }
 }

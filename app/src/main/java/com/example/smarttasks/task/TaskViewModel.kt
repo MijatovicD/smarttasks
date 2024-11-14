@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.domain.model.Task
 import com.example.domain.usecase.GetTasksUseCase
 import com.example.smarttasks.TaskToTaskUiModelMapper
-import com.example.smarttasks.task.model.TaskUIState
+import com.example.smarttasks.task.model.TaskListUiState
 import com.example.smarttasks.task.model.TaskUiModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,11 +19,11 @@ class TaskViewModel(
     private val taskToTaskUiModelMapper: TaskToTaskUiModelMapper,
 ) : ViewModel() {
 
-    private val mutableStateTaskUiState: MutableStateFlow<TaskUIState> =
-        MutableStateFlow(TaskUIState.Loading)
+    private val mutableStateTaskListUiState: MutableStateFlow<TaskListUiState> =
+        MutableStateFlow(TaskListUiState.Loading)
 
-    val taskListUiStateFlow: StateFlow<TaskUIState> =
-        mutableStateTaskUiState.asStateFlow()
+    val taskListUiStateFlow: StateFlow<TaskListUiState> =
+        mutableStateTaskListUiState.asStateFlow()
 
     init {
         getTasks()
@@ -34,11 +34,11 @@ class TaskViewModel(
             getTasksUseCase.runCatching {
                 execute(Unit)
             }.mapCatching { tasks ->
-                if (tasks.isEmpty()) TaskUIState.Empty
-                else TaskUIState.Complete(tasks.toUiModel())
+                if (tasks.isEmpty()) TaskListUiState.Empty
+                else TaskListUiState.Complete(tasks.toUiModel())
             }.getOrThrow()
                 .also { uiState ->
-                    mutableStateTaskUiState.update { uiState }
+                    mutableStateTaskListUiState.update { uiState }
                 }
         }
     }
