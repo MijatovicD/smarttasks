@@ -60,7 +60,7 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    fun TaskListScreen(uiState: TaskListUiState, currentDate: LocalDate) {
+    fun TaskListScreen(uiState: TaskListUiState, currentDate: String) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -81,7 +81,7 @@ class MainActivity : ComponentActivity() {
                 }
 
                 Text(
-                    text = currentDate.toString(),
+                    text = currentDate,
                     modifier = Modifier.align(Alignment.CenterVertically)
                 )
 
@@ -151,7 +151,7 @@ class MainActivity : ComponentActivity() {
                 .fillMaxSize(),
             contentAlignment = Alignment.Center,
         ) {
-
+            Text(text = "Empty task list.")
         }
     }
 
@@ -232,7 +232,7 @@ class MainActivity : ComponentActivity() {
         SmartTasksTheme {
             TaskListScreen(
                 uiState = taskListCompleteUiState,
-                currentDate = LocalDate.now(),
+                currentDate = "2024-11-12",
             )
         }
     }
