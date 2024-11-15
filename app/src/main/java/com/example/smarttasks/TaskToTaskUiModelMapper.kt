@@ -19,7 +19,7 @@ class TaskToTaskUiModelMapper(defaultDispatcher: CoroutineDispatcher) :
             title = title,
             description = description,
             dueDate = dueDate,
-            daysLeft = dueDate.daysLeft(),
+            daysLeft = dueDate?.daysLeft() ?: LocalDate.now().toString(),
             priority = priority,
             targetDate = targetDate,
         )

@@ -1,6 +1,7 @@
 package com.example.data.network
 
-import com.example.data.model.TaskResponseBody
+import com.example.data.model.TaskResponse
+import com.example.data.model.TaskResponse.TaskResponseBody
 import com.example.domain.mapper.Mapper
 import com.example.domain.model.Task
 import kotlinx.coroutines.CoroutineDispatcher

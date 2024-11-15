@@ -34,7 +34,7 @@ class TaskViewModel(
     val taskListUiStateFlow: StateFlow<TaskListUiState> =
         mutableStateTaskListUiState.asStateFlow()
 
-    private val mutableCurrentDateFlow = MutableStateFlow(LocalDate.now())
+    private val mutableCurrentDateFlow = MutableStateFlow(LocalDate.parse(LocalDate.now().format(dateFormatter), dateFormatter))
     val currentDateFlow: StateFlow<LocalDate> = mutableCurrentDateFlow
 
     init {
@@ -60,7 +60,10 @@ class TaskViewModel(
             mapList(this@toUiModel)
         }.onSuccess { taskList ->
             taskList.sortedWith(
-                compareBy<TaskUiModel> { it.priority }.thenBy { LocalDate.parse(it.dueDate, dateFormatter) }
+                compareBy<TaskUiModel> { it.priority }
+                    .thenBy { uiModel ->
+                        uiModel.dueDate?.let { LocalDate.parse(it, dateFormatter) }
+                    }
             )
         }.onFailure {
             Log.d("00>", "Couldn't map to task ui model.")
@@ -73,9 +76,17 @@ class TaskViewModel(
 
             val completeState =
                 mutableStateTaskListUiState.filterIsInstance<TaskListUiState.Complete>()
-            val taskList = completeState.mapNotNull { it.uiModel }
-                .map { task -> task.filter { dueDate -> dueDate.equals(mutableCurrentDateFlow.value) } }
-            mutableStateTaskListUiState.update { TaskListUiState.Complete(taskList.first()) }
+
+            val filteredTasks = completeState.map { state ->
+                state.uiModel.filter { task ->
+                    task.dueDate?.let { dueDate ->
+                        LocalDate.parse(dueDate, dateFormatter) == mutableCurrentDateFlow.value
+                    } == true
+                }
+            }
+            Log.d("00>", "${filteredTasks.first()}")
+            mutableStateTaskListUiState.update { TaskListUiState.Complete(filteredTasks.first()) }
+            Log.d("000>", "${mutableStateTaskListUiState.value}")
         }
     }
 }

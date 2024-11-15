@@ -16,6 +16,6 @@ class TaskRepositoryImpl(
         }.mapCatching { tasks ->
             requireNotNull(tasks.body()) { "Task list is null." }
         }.mapCatching { taskList ->
-            taskResponseBodyToTaskMapper.map(taskList)
+            taskResponseBodyToTaskMapper.map(taskList.tasks)
         }.getOrThrow()
 }
