@@ -43,8 +43,11 @@ class TaskViewModel(
             getTasksUseCase.runCatching {
                 execute(Unit)
             }.mapCatching { tasks ->
-                if (tasks.isEmpty()) TaskListUiState.Empty
-                else TaskListUiState.Complete(tasks.toUiModel())
+                cacheTaskList = tasks.toUiModel()
+                when {
+                    tasks.isEmpty() || tasks.filter { it.targetDate == mutableCurrentDateFlow.value }.isEmpty() -> TaskListUiState.Empty
+                    else -> TaskListUiState.Complete(tasks.toUiModel())
+                }
             }.getOrThrow()
                 .also { uiState ->
                     mutableStateTaskListUiState.update { uiState }
@@ -56,7 +59,6 @@ class TaskViewModel(
         taskToTaskUiModelMapper.runCatching {
             mapList(this@toUiModel)
         }.onSuccess { taskList ->
-            cacheTaskList = taskList
             taskList.sortedWith(compareBy<TaskUiModel> { it.priority }
                 .thenBy { uiModel ->
                     uiModel.dueDate?.let { LocalDate.parse(it, dateFormatter) }
