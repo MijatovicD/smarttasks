@@ -11,6 +11,8 @@ import com.example.smarttasks.task.model.TaskUiModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -84,4 +86,7 @@ class TaskViewModel(
             }
         }
     }
+
+    fun findTaskById(id: String): TaskUiModel =
+        cacheTaskList.filter { it.id == id }.first()
 }
